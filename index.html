@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sunbeam Robotek Roborace</title>
+    <title>Sunbeam Robotek Roborace - Team Registration</title>
     <!-- Load Supabase JS Client via CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -31,6 +31,9 @@
             font-size: 2.2rem;
             margin-bottom: 8px;
         }
+        p {
+            color: #94a3b8;
+        }
         .container {
             width: 100%;
             max-width: 600px;
@@ -40,58 +43,60 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
             margin-bottom: 20px;
         }
-        .status-badge {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            background-color: #334155;
-            color: #94a3b8;
-        }
-        .status-badge.online {
-            background-color: #064e3b;
-            color: #34d399;
-        }
-        .status-badge.offline {
-            background-color: #7f1d1d;
-            color: #f87171;
-        }
         form {
             display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        label {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            font-weight: 600;
         }
         input {
-            flex: 1;
-            padding: 10px 14px;
+            width: 100%;
+            padding: 12px 14px;
             border-radius: 6px;
             border: 1px solid #475569;
             background-color: #0f172a;
             color: #fff;
             outline: none;
+            font-size: 1rem;
         }
         input:focus {
             border-color: #38bdf8;
         }
         button {
-            padding: 10px 20px;
+            padding: 12px 20px;
             background-color: #0284c7;
             color: white;
             border: none;
             border-radius: 6px;
             font-weight: bold;
+            font-size: 1rem;
             cursor: pointer;
             transition: background 0.2s;
+            margin-top: 5px;
         }
         button:hover {
             background-color: #0369a1;
         }
+        .list-title {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #38bdf8;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 8px;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
         }
         th, td {
             padding: 12px;
@@ -112,64 +117,67 @@
 
     <header>
         <h1>Sunbeam Robotek Roborace</h1>
-        <p>Live Event Leaderboard</p>
+        <p>Official Team Registration Portal</p>
     </header>
 
     <div class="container">
-        <div id="status" class="status-badge">Connecting to Supabase...</div>
-
-        <!-- Form to Add New Entry -->
-        <form id="teamForm">
-            <input type="text" id="teamName" placeholder="Team Name" required />
-            <input type="number" id="teamScore" placeholder="Score / Time (s)" required />
-            <button type="submit">Submit Score</button>
+        <!-- Registration Form -->
+        <form id="registrationForm">
+            <div class="form-group">
+                <label for="teamName">Team Name</label>
+                <input type="text" id="teamName" placeholder="Enter your team name" required />
+            </div>
+            <div class="form-group">
+                <label for="teamScore">Robot ID / Slot Number</label>
+                <input type="number" id="teamScore" placeholder="Enter number" required />
+            </div>
+            <button type="submit">Register Team</button>
         </form>
 
-        <!-- Leaderboard Table -->
+        <!-- Registered Teams List -->
+        <div class="list-title">Registered Teams</div>
         <table>
             <thead>
                 <tr>
-                    <th>Team</th>
-                    <th>Score</th>
+                    <th>Team Name</th>
+                    <th>Slot / ID</th>
                 </tr>
             </thead>
             <tbody id="leaderboard">
                 <tr>
-                    <td colspan="2" style="text-align: center; color: #64748b;">Loading scores...</td>
+                    <td colspan="2" style="text-align: center; color: #64748b;">Loading registered teams...</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
     <script>
-        // 1. Supabase Credentials
-        const SUPABASE_URL = 'https://hdpmuwvdpzydxpwopxxy.supabase.co';
-        
-        // REPLACE THIS STRING WITH YOUR ACTUAL ANON KEY FROM SUPABASE SETTINGS
+        // ==========================================
+        // SUPABASE CREDENTIALS
+        // ==========================================
+        const SUPABASE_URL = 'https://hdpmuwvdpzydxpwopxxy.supabase.co';[cite: 2]
         const SUPABASE_ANON_KEY = 'sb_publishable_v7Tx253JareIwGz4WSFRjg_zpyw6p-5';
+        // ==========================================
 
-        // 2. Initialize Supabase
+        // Initialize Supabase Client
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        const statusEl = document.getElementById('status');
         const leaderboardEl = document.getElementById('leaderboard');
-        const teamForm = document.getElementById('teamForm');
+        const registrationForm = document.getElementById('registrationForm');
 
-        // 3. Fetch Data and Display
-        async function fetchScores() {
-            const { data, error } = await supabaseClient.from('teams').select('*').order('score', { ascending: false });
+        // Fetch Registered Teams from Supabase
+        async function fetchRegistrations() {
+            const { data, error } = await supabaseClient
+                .from('teams')
+                .select('*')
+                .order('score', { ascending: true });
 
             if (error) {
-                statusEl.textContent = 'Connection Error: ' + error.message;
-                statusEl.className = 'status-badge offline';
-                leaderboardEl.innerHTML = '<tr><td colspan="2" style="text-align: center; color: #f87171;">Failed to load data. Ensure "teams" table exists with RLS configured.</td></tr>';
+                leaderboardEl.innerHTML = `<tr><td colspan="2" style="text-align: center; color: #f87171;">Error loading data: ${error.message}</td></tr>`;
             } else {
-                statusEl.textContent = '● Connected to Supabase';
-                statusEl.className = 'status-badge online';
-                
                 if (data.length === 0) {
-                    leaderboardEl.innerHTML = '<tr><td colspan="2" style="text-align: center; color: #94a3b8;">No scores recorded yet.</td></tr>';
+                    leaderboardEl.innerHTML = '<tr><td colspan="2" style="text-align: center; color: #94a3b8;">No teams registered yet. Be the first!</td></tr>';
                 } else {
                     leaderboardEl.innerHTML = data.map(team => `
                         <tr>
@@ -181,25 +189,10 @@
             }
         }
 
-        // 4. Handle Form Submission
-        teamForm.addEventListener('submit', async (e) => {
+        // Handle Form Submission
+        registrationForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('teamName').value;
             const score = parseInt(document.getElementById('teamScore').value);
 
-            const { error } = await supabaseClient.from('teams').insert([{ team_name: name, score: score }]);
-
-            if (error) {
-                alert('Error submitting score: ' + error.message);
-            } else {
-                document.getElementById('teamName').value = '';
-                document.getElementById('teamScore').value = '';
-                fetchScores(); // Refresh list
-            }
-        });
-
-        // Run on load
-        fetchScores();
-    </script>
-</body>
-</html>
+            const { error }
