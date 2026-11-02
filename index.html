@@ -1,198 +1,511 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sunbeam Robotek Roborace - Team Registration</title>
-    <!-- Load Supabase JS Client via CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        header {
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        h1 {
-            color: #38bdf8;
-            font-size: 2.2rem;
-            margin-bottom: 8px;
-        }
-        p {
-            color: #94a3b8;
-        }
-        .container {
-            width: 100%;
-            max-width: 600px;
-            background-color: #1e293b;
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-            margin-bottom: 20px;
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        label {
-            font-size: 0.9rem;
-            color: #cbd5e1;
-            font-weight: 600;
-        }
-        input {
-            width: 100%;
-            padding: 12px 14px;
-            border-radius: 6px;
-            border: 1px solid #475569;
-            background-color: #0f172a;
-            color: #fff;
-            outline: none;
-            font-size: 1rem;
-        }
-        input:focus {
-            border-color: #38bdf8;
-        }
-        button {
-            padding: 12px 20px;
-            background-color: #0284c7;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 5px;
-        }
-        button:hover {
-            background-color: #0369a1;
-        }
-        .list-title {
-            font-size: 1.1rem;
-            margin-bottom: 15px;
-            color: #38bdf8;
-            border-bottom: 1px solid #334155;
-            padding-bottom: 8px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #334155;
-        }
-        th {
-            color: #94a3b8;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-        }
-        tr:hover {
-            background-color: #334155;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sunbeam RoboRace – Team Registration</title>
+<meta name="description" content="Register your team for Sunbeam RoboRace, the wireless robot racing event for classes 6 to 8 at Sunbeam School, Mau.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --indigo:#1B1F4B;
+  --indigo-2:#2A3070;
+  --asphalt:#3A4070;
+  --sun:#FFC400;
+  --sun-deep:#E8A800;
+  --signal:#FF4B3E;
+  --mint:#14B889;
+  --sky:#EEF1FF;
+  --white:#FFFFFF;
+  --ink:#1B1F4B;
+  --muted:#5B6190;
+  --line:#D5DAF5;
+  --display:'Bungee','Impact',sans-serif;
+  --body:'Outfit','Segoe UI',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);background:var(--sky);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--signal);outline-offset:3px;border-radius:6px}
+
+/* ---------- Hero ---------- */
+.hero{background:var(--indigo);color:var(--white);position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:22px;
+  background:repeating-conic-gradient(var(--white) 0 25%,var(--indigo) 0 50%) 0 0/22px 22px;opacity:.95}
+.bar{max-width:1120px;margin:0 auto;padding:18px 20px;display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.2px}
+.bar svg{flex:none}
+.bar span small{display:block;font-weight:500;font-size:.78rem;color:#B9C0F5}
+.hero-grid{max-width:1120px;margin:0 auto;padding:18px 20px 70px;display:grid;grid-template-columns:1.05fr 1fr;gap:28px;align-items:center}
+.hero h1{font-family:var(--display);font-weight:400;font-size:clamp(2.4rem,6.4vw,4.6rem);line-height:.98;letter-spacing:.5px}
+.hero h1 em{font-style:normal;color:var(--sun);display:block}
+.hero p.lead{margin-top:18px;font-size:1.12rem;color:#D8DCFA;max-width:34ch}
+.cta{display:inline-flex;align-items:center;gap:10px;margin-top:26px;background:var(--sun);color:var(--indigo);font-weight:700;font-size:1.05rem;
+  padding:14px 26px;border-radius:999px;text-decoration:none;box-shadow:0 5px 0 var(--sun-deep);transition:transform .15s,box-shadow .15s}
+.cta:hover{transform:translateY(2px);box-shadow:0 3px 0 var(--sun-deep)}
+.cta:active{transform:translateY(5px);box-shadow:0 0 0 var(--sun-deep)}
+.track{width:100%;height:auto;display:block}
+.wifi path{animation:ping 1.4s ease-in-out infinite;opacity:0}
+.wifi path:nth-child(2){animation-delay:.2s}
+.wifi path:nth-child(3){animation-delay:.4s}
+@keyframes ping{0%,100%{opacity:0}40%{opacity:1}}
+
+/* ---------- Rules strip ---------- */
+.rules{max-width:1120px;margin:-34px auto 0;padding:0 20px;position:relative;z-index:2;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.rule{background:var(--white);border:2px solid var(--indigo);border-radius:16px;padding:16px 18px;box-shadow:0 5px 0 var(--indigo)}
+.rule b{display:block;font-family:var(--display);font-weight:400;font-size:1.3rem;line-height:1.1;color:var(--indigo)}
+.rule span{font-size:.92rem;color:var(--muted)}
+.rule:nth-child(1) b{color:var(--signal)}
+.rule:nth-child(2) b{color:var(--mint)}
+.rule:nth-child(3) b{color:var(--indigo-2)}
+.rule:nth-child(4) b{color:var(--sun-deep)}
+.rule:nth-child(5) b{color:var(--signal)}
+
+/* ---------- Form ---------- */
+main{max-width:760px;margin:0 auto;padding:60px 20px 80px}
+.sheet{background:var(--white);border-radius:24px;border:2px solid var(--indigo);box-shadow:0 8px 0 var(--indigo);padding:34px 30px}
+.sheet h2{font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,4vw,2.1rem);line-height:1.1}
+.sheet .sub{color:var(--muted);margin:8px 0 26px}
+fieldset{border:0;margin-bottom:26px}
+legend{font-weight:700;font-size:1.1rem;margin-bottom:12px;padding:0}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.field.full{grid-column:1/-1}
+label{font-weight:600;font-size:.95rem}
+label i{color:var(--signal);font-style:normal}
+input,select{font:inherit;font-size:16px;color:var(--ink);background:var(--sky);border:2px solid transparent;border-radius:12px;padding:12px 14px;width:100%;transition:border-color .15s,background .15s,box-shadow .15s}
+input::placeholder{color:#8D93BF}
+input:hover,select:hover{border-color:var(--line)}
+input:focus,select:focus{outline:none;background:var(--white);border-color:var(--indigo);box-shadow:0 0 0 4px rgba(255,196,0,.45)}
+.field.bad input,.field.bad select{border-color:var(--signal);background:#FFF3F2}
+.err{color:#C42B1F;font-size:.85rem;min-height:0;display:none}
+.field.bad .err{display:block;animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.hint{font-size:.85rem;color:var(--muted)}
+.phone{display:flex;align-items:stretch;gap:0}
+.phone span{display:flex;align-items:center;padding:0 14px;background:var(--line);border-radius:12px 0 0 12px;font-weight:600}
+.phone input{border-radius:0 12px 12px 0}
+
+.member{border:2px dashed var(--line);border-radius:18px;padding:18px 18px 4px;margin-bottom:16px;position:relative;background:#FBFCFF;transform-origin:top;animation:pop .35s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{from{opacity:0;transform:scale(.94) translateY(-8px)}to{opacity:1;transform:none}}
+.member.leaving{animation:out .22s ease forwards}
+@keyframes out{to{opacity:0;transform:scale(.94)}}
+.member h3{display:flex;align-items:center;gap:10px;font-size:1rem;margin-bottom:14px}
+.badge{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--sun);color:var(--indigo);font-family:var(--display);font-size:.95rem;border:2px solid var(--indigo)}
+.tag{font-size:.78rem;font-weight:600;background:var(--indigo);color:var(--white);padding:2px 10px;border-radius:999px}
+.remove{margin-left:auto;background:none;border:2px solid var(--line);color:var(--signal);font:inherit;font-weight:600;font-size:.85rem;padding:5px 12px;border-radius:999px;cursor:pointer;transition:background .15s,border-color .15s}
+.remove:hover{background:#FFF3F2;border-color:var(--signal)}
+.add{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;font:inherit;font-weight:700;font-size:1rem;color:var(--indigo);background:var(--white);border:2px dashed var(--indigo);border-radius:16px;padding:14px;cursor:pointer;transition:background .15s,transform .15s}
+.add:hover{background:var(--sun)}
+.add:active{transform:scale(.98)}
+.add[hidden]{display:none}
+.count{text-align:center;font-size:.9rem;color:var(--muted);margin-top:10px}
+
+.agree{display:flex;gap:12px;align-items:flex-start;background:var(--sky);border-radius:14px;padding:14px 16px;margin-bottom:6px;cursor:pointer}
+.agree input{width:22px;height:22px;flex:none;margin-top:2px;accent-color:var(--indigo)}
+.agree label{font-weight:500;cursor:pointer}
+.field.bad.agreefield .agree{outline:2px solid var(--signal)}
+
+.go{width:100%;margin-top:20px;font:inherit;font-weight:700;font-size:1.15rem;background:var(--indigo);color:var(--white);border:0;border-radius:16px;padding:17px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:12px;box-shadow:0 6px 0 #0E1130;transition:transform .15s,box-shadow .15s,background .15s}
+.go:hover{background:var(--indigo-2)}
+.go:active{transform:translateY(4px);box-shadow:0 2px 0 #0E1130}
+.go[disabled]{opacity:.7;cursor:wait}
+.spin{width:18px;height:18px;border-radius:50%;border:3px solid rgba(255,255,255,.35);border-top-color:#fff;animation:rot .7s linear infinite;display:none}
+.go.loading .spin{display:block}
+@keyframes rot{to{transform:rotate(360deg)}}
+.formerr{display:none;margin-top:14px;background:#FFF3F2;border:2px solid var(--signal);color:#8E1E15;padding:12px 14px;border-radius:12px;font-weight:500}
+.formerr.show{display:block}
+.hp{position:absolute;left:-9999px;opacity:0;height:0;width:0}
+
+/* ---------- Success ---------- */
+.done{display:none;text-align:center;padding:10px 0 6px}
+.done.show{display:block;animation:pop .5s cubic-bezier(.2,1.4,.4,1)}
+.lane{position:relative;height:64px;margin:6px 0 20px;border-radius:14px;background:var(--asphalt);overflow:hidden}
+.lane::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:4px dashed var(--sun);transform:translateY(-50%);opacity:.8}
+.lane::after{content:"";position:absolute;right:0;top:0;bottom:0;width:24px;background:repeating-conic-gradient(#fff 0 25%,#1B1F4B 0 50%) 0 0/12px 12px}
+.lane svg{position:absolute;top:14px;left:-70px;animation:dash 1.6s cubic-bezier(.3,.6,.2,1) forwards}
+@keyframes dash{to{left:calc(100% - 100px)}}
+.done h2{margin-bottom:8px}
+.code{display:inline-block;font-family:var(--display);font-size:1.7rem;letter-spacing:2px;background:var(--sun);border:2px solid var(--indigo);border-radius:14px;padding:8px 20px;margin:14px 0}
+.done p{color:var(--muted);max-width:44ch;margin:0 auto 8px}
+.receipt{text-align:left;border:2px solid var(--indigo);border-radius:18px;padding:18px;margin:18px 0;background:#FBFCFF}
+.receipt dl{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin-bottom:14px}
+.receipt dt{color:var(--muted);font-weight:500}
+.receipt dd{font-weight:600;word-break:break-word}
+.receipt h4{font-size:1rem;margin:6px 0 10px}
+.rmem{border-top:2px dashed var(--line);padding:10px 0;display:grid;grid-template-columns:1fr 1fr;gap:2px 14px;font-size:.93rem}
+.rmem b{grid-column:1/-1;font-size:1rem}
+.rmem span{color:var(--muted);word-break:break-word}
+.actions{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:8px}
+.btn2{font:inherit;font-weight:700;border:2px solid var(--indigo);background:var(--white);color:var(--indigo);border-radius:14px;padding:12px 20px;cursor:pointer;box-shadow:0 4px 0 var(--indigo);transition:transform .15s,box-shadow .15s,background .15s}
+.btn2:hover{background:var(--sun)}
+.btn2:active{transform:translateY(3px);box-shadow:0 1px 0 var(--indigo)}
+.btn2.main{background:var(--sun)}
+@media print{
+  .hero,.rules,footer,.actions,.lane{display:none!important}
+  body{background:#fff}main{padding:0}.sheet{box-shadow:none;border:0}
+}
+footer{text-align:center;padding:0 20px 40px;color:var(--muted);font-size:.9rem}
+
+@media (max-width:860px){
+  .hero-grid{grid-template-columns:1fr;padding-bottom:60px}
+}
+@media (max-width:560px){
+  .row{grid-template-columns:1fr}
+  .sheet{padding:24px 18px}
+  .member{padding:16px 14px 2px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+  .lane svg{left:calc(100% - 100px)}
+}
+</style>
 </head>
 <body>
 
-    <header>
-        <h1>Sunbeam Robotek Roborace</h1>
-        <p>Official Team Registration Portal</p>
-    </header>
+<header class="hero">
+  <div class="bar">
+    <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true">
+      <g stroke="#FFC400" stroke-width="3" stroke-linecap="round">
+        <path d="M20 2v6M20 32v6M2 20h6M32 20h6M7.3 7.3l4.2 4.2M28.5 28.5l4.2 4.2M32.7 7.3l-4.2 4.2M11.5 28.5l-4.2 4.2"/>
+      </g>
+      <circle cx="20" cy="20" r="8" fill="#FFC400"/>
+    </svg>
+    <span>Sunbeam School, Mau<small>Sunbeam Robotek presents</small></span>
+  </div>
 
-    <div class="container">
-        <!-- Registration Form -->
-        <form id="registrationForm">
-            <div class="form-group">
-                <label for="teamName">Team Name</label>
-                <input type="text" id="teamName" placeholder="Enter your team name" required />
-            </div>
-            <div class="form-group">
-                <label for="teamScore">Robot ID / Slot Number</label>
-                <input type="number" id="teamScore" placeholder="Enter number" required />
-            </div>
-            <button type="submit">Register Team</button>
-        </form>
-
-        <!-- Registered Teams List -->
-        <div class="list-title">Registered Teams</div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Team Name</th>
-                    <th>Slot / ID</th>
-                </tr>
-            </thead>
-            <tbody id="leaderboard">
-                <tr>
-                    <td colspan="2" style="text-align: center; color: #64748b;">Loading registered teams...</td>
-                </tr>
-            </tbody>
-        </table>
+  <div class="hero-grid">
+    <div>
+      <h1>Sunbeam <em>RoboRace</em></h1>
+      <p class="lead">Build a wireless robot. Beat the clock. Win the track. Open to students of classes 6 to 8.</p>
+      <a class="cta" href="#register">Register your team</a>
     </div>
 
-    <script>
-        // ==========================================
-        // SUPABASE CREDENTIALS
-        // ==========================================
-        const SUPABASE_URL = 'https://hdpmuwvdpzydxpwopxxy.supabase.co';[cite: 2]
-        const SUPABASE_ANON_KEY = 'sb_publishable_v7Tx253JareIwGz4WSFRjg_zpyw6p-5';
-        // ==========================================
+    <svg class="track" id="track" viewBox="0 0 600 330" role="img" aria-label="A small robot car racing around a track">
+      <defs>
+        <pattern id="chk" width="10" height="10" patternUnits="userSpaceOnUse">
+          <rect width="10" height="10" fill="#fff"/><rect width="5" height="5" fill="#1B1F4B"/><rect x="5" y="5" width="5" height="5" fill="#1B1F4B"/>
+        </pattern>
+      </defs>
+      <path id="road" d="M130 80 H430 C525 80 545 160 475 205 C425 235 385 195 335 225 C295 250 305 275 245 275 H150 C70 275 50 195 80 135 C92 108 108 80 130 80 Z"
+            fill="none" stroke="#3A4070" stroke-width="54" stroke-linejoin="round"/>
+      <path d="M130 80 H430 C525 80 545 160 475 205 C425 235 385 195 335 225 C295 250 305 275 245 275 H150 C70 275 50 195 80 135 C92 108 108 80 130 80 Z"
+            fill="none" stroke="#FFC400" stroke-width="3" stroke-dasharray="12 12" stroke-linejoin="round"/>
+      <rect x="250" y="53" width="20" height="54" fill="url(#chk)"/>
+      <g>
+        <g>
+          <rect x="-17" y="-10" width="34" height="20" rx="6" fill="#FFC400" stroke="#1B1F4B" stroke-width="2.5"/>
+          <rect x="3" y="-6" width="9" height="12" rx="3" fill="#1B1F4B"/>
+          <rect x="-14" y="-14" width="9" height="5" rx="2" fill="#1B1F4B"/><rect x="-14" y="9" width="9" height="5" rx="2" fill="#1B1F4B"/>
+          <rect x="6" y="-14" width="9" height="5" rx="2" fill="#1B1F4B"/><rect x="6" y="9" width="9" height="5" rx="2" fill="#1B1F4B"/>
+          <g class="wifi" fill="none" stroke="#FF4B3E" stroke-width="2.5" stroke-linecap="round" transform="translate(-8 -14) rotate(-90)">
+            <path d="M3 -3 A4 4 0 0 1 3 3"/><path d="M8 -6 A8 8 0 0 1 8 6"/><path d="M13 -9 A12 12 0 0 1 13 9"/>
+          </g>
+        </g>
+        <animateMotion dur="7s" repeatCount="indefinite" rotate="auto"><mpath href="#road"/></animateMotion>
+      </g>
+    </svg>
+  </div>
+</header>
 
-        // Initialize Supabase Client
-        const { createClient } = supabase;
-        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+<section class="rules" aria-label="Event rules">
+  <div class="rule"><b>Classes 6–8</b><span>Only Sunbeam School students</span></div>
+  <div class="rule"><b>1 to 3</b><span>Members in every team</span></div>
+  <div class="rule"><b>Wireless only</b><span>No wired robots on the track</span></div>
+  <div class="rule"><b>20×20×15 cm</b><span>Maximum robot size</span></div>
+  <div class="rule"><b>Max 1.5 kg</b><span>Maximum robot weight</span></div>
+</section>
 
-        const leaderboardEl = document.getElementById('leaderboard');
-        const registrationForm = document.getElementById('registrationForm');
+<main id="register">
+  <div class="sheet">
+    <form id="form" novalidate>
+      <div id="formWrap">
+        <h2>Register your team</h2>
+        <p class="sub">Fill this in once per team. The team leader’s email and mobile number will be used to contact you.</p>
 
-        // Fetch Registered Teams from Supabase
-        async function fetchRegistrations() {
-            const { data, error } = await supabaseClient
-                .from('teams')
-                .select('*')
-                .order('score', { ascending: true });
+        <fieldset>
+          <legend>Team</legend>
+          <div class="field" id="f-team">
+            <label for="team">Team name <i>*</i></label>
+            <input id="team" name="team" type="text" maxlength="40" placeholder="e.g. Turbo Titans" autocomplete="off">
+            <span class="err"></span>
+          </div>
+          <div class="field" id="f-bot">
+            <label for="bot">Robot name <i>*</i></label>
+            <input id="bot" name="bot" type="text" maxlength="40" placeholder="e.g. Lightning Bolt" autocomplete="off">
+            <span class="err"></span>
+          </div>
+          <div class="row">
+            <div class="field" id="f-email">
+              <label for="email">Team contact email <i>*</i></label>
+              <input id="email" name="email" type="email" placeholder="parent@example.com" autocomplete="email" inputmode="email">
+              <span class="err"></span>
+            </div>
+            <div class="field" id="f-mobile">
+              <label for="mobile">Team contact mobile <i>*</i></label>
+              <div class="phone"><span>+91</span><input id="mobile" name="mobile" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit number" autocomplete="tel-national"></div>
+              <span class="err"></span>
+            </div>
+          </div>
+        </fieldset>
 
-            if (error) {
-                leaderboardEl.innerHTML = `<tr><td colspan="2" style="text-align: center; color: #f87171;">Error loading data: ${error.message}</td></tr>`;
-            } else {
-                if (data.length === 0) {
-                    leaderboardEl.innerHTML = '<tr><td colspan="2" style="text-align: center; color: #94a3b8;">No teams registered yet. Be the first!</td></tr>';
-                } else {
-                    leaderboardEl.innerHTML = data.map(team => `
-                        <tr>
-                            <td><strong>${team.team_name}</strong></td>
-                            <td>${team.score}</td>
-                        </tr>
-                    `).join('');
-                }
-            }
-        }
+        <fieldset>
+          <legend>Team members</legend>
+          <div id="members"></div>
+          <button type="button" class="add" id="addBtn">＋ Add member</button>
+          <p class="count" id="count"></p>
+        </fieldset>
 
-        // Handle Form Submission
-        registrationForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const name = document.getElementById('teamName').value;
-            const score = parseInt(document.getElementById('teamScore').value);
+        <div class="field agreefield" id="f-agree">
+          <div class="agree">
+            <input type="checkbox" id="agree">
+            <label for="agree">We understand that our robot must be wireless, fit within 20 × 20 × 15 cm and weigh no more than 1.5 kg.</label>
+          </div>
+          <span class="err"></span>
+        </div>
 
-            const { error }
+        <input class="hp" type="text" name="website" id="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+        <button class="go" id="go" type="submit"><span class="spin"></span><span id="goText">Register team</span></button>
+        <div class="formerr" id="formerr" role="alert"></div>
+      </div>
+
+      <div class="done" id="done" aria-live="polite">
+        <div class="lane" aria-hidden="true">
+          <svg width="52" height="36" viewBox="-26 -18 52 36">
+            <rect x="-17" y="-10" width="34" height="20" rx="6" fill="#FFC400" stroke="#1B1F4B" stroke-width="2.5"/>
+            <rect x="3" y="-6" width="9" height="12" rx="3" fill="#1B1F4B"/>
+            <rect x="-14" y="-15" width="9" height="5" rx="2" fill="#fff"/><rect x="-14" y="10" width="9" height="5" rx="2" fill="#fff"/>
+            <rect x="6" y="-15" width="9" height="5" rx="2" fill="#fff"/><rect x="6" y="10" width="9" height="5" rx="2" fill="#fff"/>
+          </svg>
+        </div>
+        <h2 id="doneTitle">You’re on the grid!</h2>
+        <p>Your unique team ID is</p>
+        <div class="code" id="code">SRT-0000</div>
+        <div class="receipt" id="receipt"></div>
+        <div class="actions">
+          <button type="button" class="btn2 main" id="copyBtn">Copy team ID</button>
+          <button type="button" class="btn2" id="printBtn">Save or print receipt</button>
+          <button type="button" class="btn2" id="againBtn">Register another team</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</main>
+
+<footer>Sunbeam RoboRace · Sunbeam Robotek · Sunbeam School, Mau</footer>
+
+<script>
+/* ============ CONFIG: change only these two values ============ */
+const CONFIG = {
+  hdpmuwvdpzydxpwopxxy.supabase.co: "",       // e.g. https://abcdxyz.supabase.co
+  : "",  // the "sb_publishable_v7Tx253JareIwGz4WSFRjg_zpyw6p-5" key from Project Settings > API
+  SCHOOL: "Sunbeam School, Mau",
+  MAX_MEMBERS: 3
+};
+
+const $ = s => document.querySelector(s);
+const membersEl = $('#members'), addBtn = $('#addBtn'), countEl = $('#count');
+let seq = 0;
+
+function memberTemplate(n, id){
+  const lead = n === 1;
+  return `
+  <div class="member" data-id="${id}">
+    <h3><span class="badge">${n}</span>${lead ? 'Team leader' : 'Member ' + n}${lead ? '<span class="tag">Required</span>' : ''}
+      ${lead ? '' : '<button type="button" class="remove" data-remove>Remove</button>'}
+    </h3>
+    <div class="row">
+      <div class="field full" data-f="name"><label for="n${id}">Full name <i>*</i></label><input id="n${id}" data-k="name" type="text" maxlength="60" autocomplete="off" placeholder="Student name"><span class="err"></span></div>
+      <div class="field" data-f="cls"><label for="c${id}">Class <i>*</i></label>
+        <select id="c${id}" data-k="cls"><option value="">Choose class</option><option>6</option><option>7</option><option>8</option></select><span class="err"></span></div>
+      <div class="field" data-f="roll"><label for="r${id}">Roll number <i>*</i></label><input id="r${id}" data-k="roll" type="text" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="e.g. 24"><span class="err"></span></div>
+      <div class="field" data-f="mobile"><label for="m${id}">Mobile number <i>*</i></label><div class="phone"><span>+91</span><input id="m${id}" data-k="mobile" type="tel" inputmode="numeric" maxlength="10" autocomplete="off" placeholder="10-digit number"></div><span class="err"></span></div>
+      <div class="field" data-f="email"><label for="e${id}">Email <i>*</i></label><input id="e${id}" data-k="email" type="email" autocomplete="off" placeholder="student@example.com"><span class="err"></span></div>
+    </div>
+  </div>`;
+}
+
+function renumber(){
+  const items = [...membersEl.children];
+  items.forEach((el, i) => {
+    el.querySelector('.badge').textContent = i + 1;
+    const h = el.querySelector('h3');
+    if (i > 0) h.childNodes[1].textContent = 'Member ' + (i + 1);
+  });
+  addBtn.hidden = items.length >= CONFIG.MAX_MEMBERS;
+  countEl.textContent = items.length + ' of ' + CONFIG.MAX_MEMBERS + ' members added';
+}
+
+function addMember(focus){
+  if (membersEl.children.length >= CONFIG.MAX_MEMBERS) return;
+  membersEl.insertAdjacentHTML('beforeend', memberTemplate(membersEl.children.length + 1, ++seq));
+  renumber();
+  if (focus) membersEl.lastElementChild.querySelector('input').focus();
+}
+
+addBtn.addEventListener('click', () => addMember(true));
+membersEl.addEventListener('click', e => {
+  const b = e.target.closest('[data-remove]');
+  if (!b) return;
+  const m = b.closest('.member');
+  m.classList.add('leaving');
+  setTimeout(() => { m.remove(); renumber(); addBtn.focus(); }, 200);
+});
+
+document.addEventListener('input', e => {
+  const f = e.target.closest('.field'); if (f) f.classList.remove('bad');
+});
+$('#mobile').addEventListener('input', e => { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10); });
+membersEl.addEventListener('input', e => {
+  const k = e.target.dataset.k;
+  if (k === 'roll') e.target.value = e.target.value.replace(/\D/g, '');
+  if (k === 'mobile') e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
+});
+
+const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const mobileRe = /^[6-9]\d{9}$/;
+function setErr(field, msg){
+  field.classList.add('bad');
+  field.querySelector('.err').textContent = msg;
+}
+
+function validate(){
+  document.querySelectorAll('.field.bad').forEach(f => f.classList.remove('bad'));
+  const bad = [];
+  const team = $('#team').value.trim();
+  const bot = $('#bot').value.trim();
+  if (team.length < 2){ setErr($('#f-team'), 'Enter your team name.'); bad.push($('#team')); }
+  if (bot.length < 2){ setErr($('#f-bot'), 'Enter your robot’s name.'); bad.push($('#bot')); }
+  if (!emailRe.test($('#email').value.trim())){ setErr($('#f-email'), 'Enter a valid email, like name@example.com.'); bad.push($('#email')); }
+  if (!mobileRe.test($('#mobile').value)){ setErr($('#f-mobile'), 'Enter a 10-digit mobile number starting with 6, 7, 8 or 9.'); bad.push($('#mobile')); }
+
+  const members = [];
+  const seen = new Set();
+  membersEl.querySelectorAll('.member').forEach(m => {
+    const get = k => m.querySelector(`[data-k="${k}"]`);
+    const rec = { name: get('name').value.trim(), class: get('cls').value, roll_no: get('roll').value.trim(),
+                  mobile: get('mobile').value, email: get('email').value.trim().toLowerCase() };
+    if (rec.name.length < 2){ setErr(m.querySelector('[data-f="name"]'), 'Enter the full name.'); bad.push(get('name')); }
+    if (!rec.class){ setErr(m.querySelector('[data-f="cls"]'), 'Choose class 6, 7 or 8.'); bad.push(get('cls')); }
+    if (!rec.roll_no){ setErr(m.querySelector('[data-f="roll"]'), 'Enter the roll number.'); bad.push(get('roll')); }
+    else if (rec.class && seen.has(rec.class + '-' + rec.roll_no)){ setErr(m.querySelector('[data-f="roll"]'), 'This student is already added to the team.'); bad.push(get('roll')); }
+    if (rec.class && rec.roll_no) seen.add(rec.class + '-' + rec.roll_no);
+    if (!mobileRe.test(rec.mobile)){ setErr(m.querySelector('[data-f="mobile"]'), 'Enter a 10-digit mobile number starting with 6, 7, 8 or 9.'); bad.push(get('mobile')); }
+    if (!emailRe.test(rec.email)){ setErr(m.querySelector('[data-f="email"]'), 'Enter a valid email.'); bad.push(get('email')); }
+    members.push(rec);
+  });
+
+  if (!$('#agree').checked){ setErr($('#f-agree'), 'Please confirm the robot rules to continue.'); bad.push($('#agree')); }
+  return { ok: !bad.length, first: bad[0], team, bot, members };
+}
+
+/* Saves the team and returns the unique team ID */
+async function save(payload){
+  let res;
+  try {
+    res = await fetch(CONFIG.SUPABASE_URL.replace(/\/$/, '') + '/rest/v1/rpc/register_team', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': CONFIG.SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + CONFIG.SUPABASE_ANON_KEY
+      },
+      body: JSON.stringify({ payload })
+    });
+  } catch(e){
+    throw new Error('Could not reach the server. Check your internet and press Register team again.');
+  }
+  let data = null;
+  try { data = await res.json(); } catch(e){}
+  if (!res.ok){
+    const msg = (data && data.message) || '';
+    if (msg.includes('DUPLICATE_TEAM')) throw new Error('A team with this name is already registered. Please choose a different team name.');
+    if (msg) throw new Error(msg);
+    throw new Error('Could not save your registration. Please try again.');
+  }
+  if (!data || !data.team_id) throw new Error('Registration was not confirmed. Please try again.');
+  return data.team_id;
+}
+
+function el(tag, cls, text){
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+
+function renderReceipt(id, p){
+  const box = $('#receipt'); box.textContent = '';
+  const dl = el('dl');
+  [['Team ID', id], ['Team name', p.team_name], ['Robot name', p.bot_name], ['School', p.school],
+   ['Contact email', p.contact_email], ['Contact mobile', p.contact_mobile]].forEach(([k, v]) => {
+    dl.append(el('dt', '', k), el('dd', '', v));
+  });
+  box.append(dl, el('h4', '', 'Team members'));
+  p.members.forEach((m, i) => {
+    const d = el('div', 'rmem');
+    d.append(el('b', '', (i + 1) + '. ' + m.name),
+             el('span', '', 'Class ' + m.class + ' · Roll ' + m.roll_no),
+             el('span', '', '+91 ' + m.mobile),
+             el('span', '', m.email));
+    box.append(d);
+  });
+}
+
+$('#form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const box = $('#formerr'); box.classList.remove('show');
+  if ($('#website').value) return;
+  const v = validate();
+  if (!v.ok){
+    v.first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => v.first.focus({ preventScroll: true }), 300);
+    return;
+  }
+  const payload = {
+    school: CONFIG.SCHOOL,
+    team_name: v.team,
+    bot_name: v.bot,
+    contact_email: $('#email').value.trim().toLowerCase(),
+    contact_mobile: '+91' + $('#mobile').value,
+    members: v.members
+  };
+  const btn = $('#go');
+  btn.disabled = true; btn.classList.add('loading'); $('#goText').textContent = 'Registering…';
+  try {
+    const id = await save(payload);
+    payload.members = payload.members.map(m => ({ ...m }));
+    renderReceipt(id, payload);
+    $('#formWrap').style.display = 'none';
+    $('#code').textContent = id;
+    $('#doneTitle').textContent = v.team + ' is registered!';
+    $('#done').classList.add('show');
+    $('#register').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (err){
+    box.textContent = err.message; box.classList.add('show');
+  } finally {
+    btn.disabled = false; btn.classList.remove('loading'); $('#goText').textContent = 'Register team';
+  }
+});
+
+$('#copyBtn').addEventListener('click', async () => {
+  const id = $('#code').textContent, b = $('#copyBtn');
+  try { await navigator.clipboard.writeText(id); b.textContent = 'Copied!'; }
+  catch(e){ b.textContent = 'Press and hold the ID to copy'; }
+  setTimeout(() => b.textContent = 'Copy team ID', 2000);
+});
+$('#printBtn').addEventListener('click', () => window.print());
+$('#againBtn').addEventListener('click', () => location.reload());
+
+addMember(false);
+
+if (window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  const t = document.getElementById('track'); if (t.pauseAnimations) t.pauseAnimations();
+}
+</script>
+</body>
+</html>
