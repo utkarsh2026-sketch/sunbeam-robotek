@@ -131,6 +131,11 @@ input:focus,select:focus{outline:none;background:var(--white);border-color:var(-
 .done h2{margin-bottom:8px}
 .code{display:inline-block;font-family:var(--display);font-size:1.7rem;letter-spacing:2px;background:var(--sun);border:2px solid var(--indigo);border-radius:14px;padding:8px 20px;margin:14px 0}
 .done p{color:var(--muted);max-width:44ch;margin:0 auto 8px}
+.demo{display:none;margin-top:16px;background:var(--sky);border-radius:12px;padding:10px 14px;font-size:.88rem;color:var(--muted)}
+.demo.show{display:block}
+
+.banner{background:#FFF7D6;border:2px solid var(--sun-deep);border-radius:12px;padding:10px 14px;margin-bottom:18px;font-size:.9rem;display:none}
+.banner.show{display:block}
 .receipt{text-align:left;border:2px solid var(--indigo);border-radius:18px;padding:18px;margin:18px 0;background:#FBFCFF}
 .receipt dl{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin-bottom:14px}
 .receipt dt{color:var(--muted);font-weight:500}
@@ -144,8 +149,16 @@ input:focus,select:focus{outline:none;background:var(--white);border-color:var(-
 .btn2:hover{background:var(--sun)}
 .btn2:active{transform:translateY(3px);box-shadow:0 1px 0 var(--indigo)}
 .btn2.main{background:var(--sun)}
+.note{font-size:.88rem;color:var(--muted);margin-top:14px}
+.toast{position:fixed;top:16px;left:50%;transform:translate(-50%,-140%);z-index:70;max-width:min(92vw,520px);background:var(--indigo);color:#fff;border:2px solid var(--sun);border-radius:16px;padding:14px 20px;font-weight:600;box-shadow:0 8px 24px rgba(27,31,75,.35);transition:transform .45s cubic-bezier(.2,1.3,.4,1);text-align:center}
+.toast.show{transform:translate(-50%,0)}
+.toast b{color:var(--sun)}
+.confetti{position:fixed;top:-20px;width:10px;height:14px;z-index:60;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(112vh) rotate(720deg)}}
+.cong{font-size:1.05rem;color:var(--muted);margin-bottom:4px}
 @media print{
-  .hero,.rules,footer,.actions,.lane{display:none!important}
+  .toast,.confetti{display:none!important}
+  .hero,.rules,footer,.actions,.banner,.lane,.demo{display:none!important}
   body{background:#fff}main{padding:0}.sheet{box-shadow:none;border:0}
 }
 footer{text-align:center;padding:0 20px 40px;color:var(--muted);font-size:.9rem}
@@ -282,13 +295,14 @@ footer{text-align:center;padding:0 20px 40px;color:var(--muted);font-size:.9rem}
             <rect x="6" y="-15" width="9" height="5" rx="2" fill="#fff"/><rect x="6" y="10" width="9" height="5" rx="2" fill="#fff"/>
           </svg>
         </div>
-        <h2 id="doneTitle">You’re on the grid!</h2>
-        <p>Your unique team ID is</p>
+        <h2 id="doneTitle">Congratulations!</h2>
+        <p class="cong" id="doneSub">Your team is registered. Your unique team ID is</p>
         <div class="code" id="code">SRT-0000</div>
         <div class="receipt" id="receipt"></div>
         <div class="actions">
           <button type="button" class="btn2 main" id="copyBtn">Copy team ID</button>
-          <button type="button" class="btn2" id="printBtn">Save or print receipt</button>
+          <button type="button" class="btn2" id="dlBtn">Download team card</button>
+          <button type="button" class="btn2" id="printBtn">Print / save PDF</button>
           <button type="button" class="btn2" id="againBtn">Register another team</button>
         </div>
       </div>
@@ -296,20 +310,22 @@ footer{text-align:center;padding:0 20px 40px;color:var(--muted);font-size:.9rem}
   </div>
 </main>
 
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
 <footer>Sunbeam RoboRace · Sunbeam Robotek · Sunbeam School, Mau</footer>
 
 <script>
 /* ============ CONFIG: change only these two values ============ */
 const CONFIG = {
-  hdpmuwvdpzydxpwopxxy.supabase.co: "",       // e.g. https://abcdxyz.supabase.co
-  : "",  // the "sb_publishable_v7Tx253JareIwGz4WSFRjg_zpyw6p-5" key from Project Settings > API
+  SUPABASE_URL: "https://hdpmuwvdpzydxpwopxxy.supabase.co",       // e.g. https://abcdxyz.supabase.co
+  SUPABASE_ANON_KEY: "sb_publishable_v7Tx253JareIwGz4WSFRjg_zpyw6p-5",  // the "anon public" key from Project Settings > API
   SCHOOL: "Sunbeam School, Mau",
   MAX_MEMBERS: 3
 };
 
 const $ = s => document.querySelector(s);
 const membersEl = $('#members'), addBtn = $('#addBtn'), countEl = $('#count');
-let seq = 0;
+let seq = 0, lastReg = null, toastTimer;
 
 function memberTemplate(n, id){
   const lead = n === 1;
@@ -347,7 +363,7 @@ function addMember(focus){
   if (focus) membersEl.lastElementChild.querySelector('input').focus();
 }
 
-addBtn.addEventListener('click', () => addMember(true));
+document.addEventListener('click', e => { if (e.target.closest('#addBtn')) { e.preventDefault(); addMember(true); } });
 membersEl.addEventListener('click', e => {
   const b = e.target.closest('[data-remove]');
   if (!b) return;
@@ -405,6 +421,7 @@ function validate(){
 
 /* Saves the team and returns the unique team ID */
 async function save(payload){
+  if (!CONFIG.SUPABASE_URL || !CONFIG.SUPABASE_ANON_KEY) throw new Error('Supabase URL and key are missing in the CONFIG block of index.html.');
   let res;
   try {
     res = await fetch(CONFIG.SUPABASE_URL.replace(/\/$/, '') + '/rest/v1/rpc/register_team', {
@@ -482,15 +499,98 @@ $('#form').addEventListener('submit', async e => {
     renderReceipt(id, payload);
     $('#formWrap').style.display = 'none';
     $('#code').textContent = id;
-    $('#doneTitle').textContent = v.team + ' is registered!';
+    $('#doneSub').textContent = v.team + ' is registered for Sunbeam RoboRace. Your unique team ID is';
+    lastReg = { id, p: payload };
     $('#done').classList.add('show');
     $('#register').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    notify('🎉 <b>Congratulations!</b> Registration successful. Team ID: <b>' + id + '</b>');
+    confetti();
   } catch (err){
     box.textContent = err.message; box.classList.add('show');
   } finally {
     btn.disabled = false; btn.classList.remove('loading'); $('#goText').textContent = 'Register team';
   }
 });
+
+
+function notify(html){
+  const t = $('#toast'); t.innerHTML = html; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 7000);
+}
+
+function confetti(){
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const colors = ['#FFC400', '#FF4B3E', '#14B889', '#2A3070', '#FFFFFF'];
+  for (let i = 0; i < 70; i++){
+    const c = document.createElement('i'); c.className = 'confetti';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.background = colors[i % colors.length];
+    c.style.animationDuration = (2.4 + Math.random() * 2.2) + 's';
+    c.style.animationDelay = (Math.random() * 0.8) + 's';
+    c.style.borderRadius = i % 3 ? '2px' : '50%';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 6000);
+  }
+}
+
+/* Draws the team card as a PNG and downloads it */
+async function downloadCard(){
+  if (!lastReg) return;
+  const { id, p } = lastReg;
+  try { await Promise.all([document.fonts.load('40px Bungee'), document.fonts.load('600 30px Outfit')]); } catch(e){}
+  const W = 1080, pad = 60, mh = 170;
+  const rows = [['Team name', p.team_name], ['Robot name', p.bot_name], ['School', p.school],
+                ['Contact email', p.contact_email], ['Contact mobile', p.contact_mobile]];
+  const H = 460 + rows.length * 60 + 110 + p.members.length * (mh + 20) + 110;
+  const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const x = cv.getContext('2d');
+  const DISP = 'Bungee, Impact, sans-serif', BODY = 'Outfit, "Segoe UI", Arial, sans-serif';
+  const rr = (X, Y, w, h, r) => { x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath(); };
+  const fit = (txt, maxW, px, weight, fam) => { let s = px; do { x.font = weight + ' ' + s + 'px ' + fam; s -= 2; } while (x.measureText(txt).width > maxW && s > 16); };
+
+  x.fillStyle = '#EEF1FF'; x.fillRect(0, 0, W, H);
+  x.fillStyle = '#1B1F4B'; x.fillRect(0, 0, W, 250);
+  for (let i = 0; i < W / 20; i++){ x.fillStyle = i % 2 ? '#FFFFFF' : '#1B1F4B'; x.fillRect(i * 20, 230, 20, 10); x.fillStyle = i % 2 ? '#1B1F4B' : '#FFFFFF'; x.fillRect(i * 20, 240, 20, 10); }
+  x.fillStyle = '#FFC400'; x.textBaseline = 'alphabetic';
+  x.font = '64px ' + DISP; x.fillText('SUNBEAM ROBORACE', pad, 120);
+  x.fillStyle = '#B9C0F5'; x.font = '500 30px ' + BODY; x.fillText('Sunbeam School, Mau  ·  Team Registration Card', pad, 175);
+
+  x.fillStyle = '#FFC400'; rr(pad, 285, W - pad * 2, 130, 24); x.fill(); x.lineWidth = 4; x.strokeStyle = '#1B1F4B'; x.stroke();
+  x.fillStyle = '#5B6190'; x.font = '600 26px ' + BODY; x.fillText('TEAM ID', pad + 34, 322);
+  x.fillStyle = '#1B1F4B'; x.font = '64px ' + DISP; x.fillText(id, pad + 34, 396);
+
+  let y = 490;
+  rows.forEach(([k, v]) => {
+    x.fillStyle = '#5B6190'; x.font = '500 28px ' + BODY; x.fillText(k, pad, y);
+    x.fillStyle = '#1B1F4B'; fit(v, W - pad * 2 - 320, 32, '700', BODY); x.fillText(v, pad + 320, y);
+    y += 60;
+  });
+
+  y += 30;
+  x.fillStyle = '#1B1F4B'; x.font = '36px ' + DISP; x.fillText('TEAM MEMBERS', pad, y);
+  y += 30;
+  p.members.forEach((m, i) => {
+    x.fillStyle = '#FFFFFF'; rr(pad, y, W - pad * 2, mh, 20); x.fill(); x.lineWidth = 3; x.strokeStyle = '#D5DAF5'; x.stroke();
+    x.fillStyle = '#FFC400'; x.beginPath(); x.arc(pad + 50, y + 55, 28, 0, Math.PI * 2); x.fill(); x.lineWidth = 3; x.strokeStyle = '#1B1F4B'; x.stroke();
+    x.fillStyle = '#1B1F4B'; x.font = '28px ' + DISP; x.textAlign = 'center'; x.fillText(String(i + 1), pad + 50, y + 66); x.textAlign = 'left';
+    x.fillStyle = '#1B1F4B'; fit(m.name, W - pad * 2 - 170, 36, '700', BODY); x.fillText(m.name, pad + 100, y + 66);
+    x.fillStyle = '#5B6190'; x.font = '500 27px ' + BODY;
+    x.fillText('Class ' + m.class + '  ·  Roll ' + m.roll_no + '  ·  +91 ' + m.mobile, pad + 100, y + 112);
+    fit(m.email, W - pad * 2 - 170, 27, '500', BODY); x.fillText(m.email, pad + 100, y + 150);
+    y += mh + 20;
+  });
+
+  x.fillStyle = '#1B1F4B'; x.font = '600 28px ' + BODY; x.textAlign = 'center';
+  x.fillText('Sunbeam Robotek', W / 2, H - 50); x.textAlign = 'left';
+
+  cv.toBlob(b => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(b); a.download = 'Sunbeam-RoboRace-' + id + '.png';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  }, 'image/png');
+}
+$('#dlBtn').addEventListener('click', downloadCard);
 
 $('#copyBtn').addEventListener('click', async () => {
   const id = $('#code').textContent, b = $('#copyBtn');
